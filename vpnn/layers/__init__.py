@@ -4,7 +4,7 @@ from .diagonal import Diagonal
 from .bias import Bias
 from .downsize import SVDDownsize
 from .cheby import Chebyshev
-from . import bias, cheby, diagonal, downsize, permutation, recurrent, rotation
+from . import bias, cheby, diagonal, downsize, permutation, rotation
 
 from keras.models import Model
 from keras.layers import Input, Activation, Layer

@@ -10,7 +10,7 @@ class SVDDownsize(Layer):
         val = np.random.normal(size=(input_dim, output_dim))
         u,s,v = np.linalg.svd(val)
         z = u[:,:output_dim]
-        self.Z = tf.Variable(z,dtype=tf.float32)
+        self.Z = tf.Variable(z,dtype=tf.float32,trainable=False)
     
     def build(self, input_shape):
         super(SVDDownsize, self).build(input_shape)

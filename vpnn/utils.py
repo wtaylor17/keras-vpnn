@@ -31,7 +31,7 @@ def build_permutation(dim):
     q = np.zeros((dim,dim))
     for i in range(dim):
         q[i][perm[i]] = 1
-    kernel = K.variable(q)
+    kernel = tf.Variable(q,dtype=tf.float32,trainable=False)
     return kernel, q
 
 def default_diag(x):

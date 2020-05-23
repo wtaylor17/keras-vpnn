@@ -4,6 +4,7 @@ import keras.backend as K
 import tensorflow as tf
 import numpy as np
 
+
 def get_activation(activation, dim=-1, cheby_M=2):
     """
     safely tries to get an activation function
@@ -15,11 +16,12 @@ def get_activation(activation, dim=-1, cheby_M=2):
     if isinstance(activation, Layer):
         return activation
     elif activation == 'cheby':
-        if type(dim)!=int or dim<=0:
+        if type(dim) != int or dim <= 0:
             return None
         return Chebyshev(dim, M=cheby_M)
     else:
         return Activation(activation)
+
 
 def build_permutation(dim):
     """
@@ -28,11 +30,12 @@ def build_permutation(dim):
     :return: the permutation kernel
     """
     perm = np.random.permutation(dim)
-    q = np.zeros((dim,dim))
+    q = np.zeros((dim, dim))
     for i in range(dim):
         q[i][perm[i]] = 1
-    kernel = tf.Variable(q,dtype=tf.float32,trainable=False)
+    kernel = tf.Variable(q, dtype=tf.float32, trainable=False)
     return kernel, q
+
 
 def default_diag(x):
     """
@@ -41,6 +44,7 @@ def default_diag(x):
     :return: the function applied to x
     """
     return 1 / (1 + K.exp(-x))
+
 
 def build_diagonal(params, func, M=0.01):
     """
@@ -51,7 +55,8 @@ def build_diagonal(params, func, M=0.01):
     :return: the diagonal transformation
     """
     f_t = M * func(params / M) + M
-    return f_t / tf.roll(f_t,shift=-1,axis=0)
+    return f_t / tf.roll(f_t, shift=-1, axis=0)
+
 
 def build_rotation(output_dim, cos, sin):
     """
@@ -63,19 +68,20 @@ def build_rotation(output_dim, cos, sin):
     """
     dim = output_dim
     # index build
-    evens = range(0,dim,2)
-    ul_indices = [[i,i] for i in evens]
-    sparse_out = tf.sparse.SparseTensor(ul_indices,cos,[dim,dim])
-    ur_indices = [[i,i+1] for i in evens]
+    evens = range(0, dim, 2)
+    ul_indices = [[i, i] for i in evens]
+    sparse_out = tf.sparse.SparseTensor(ul_indices, cos, [dim, dim])
+    ur_indices = [[i, i + 1] for i in evens]
     sparse_out = tf.sparse.add(sparse_out,
-                   tf.sparse.SparseTensor(ur_indices,-sin,[dim,dim]))
-    ll_indices = [[i+1,i] for i in evens]
+                               tf.sparse.SparseTensor(ur_indices, -sin, [dim, dim]))
+    ll_indices = [[i + 1, i] for i in evens]
     sparse_out = tf.sparse.add(sparse_out,
-                   tf.sparse.SparseTensor(ll_indices,sin,[dim,dim]))
-    lr_indices = [[i+1,i+1] for i in evens]
+                               tf.sparse.SparseTensor(ll_indices, sin, [dim, dim]))
+    lr_indices = [[i + 1, i + 1] for i in evens]
     sparse_out = tf.sparse.add(sparse_out,
-                   tf.sparse.SparseTensor(lr_indices,cos,[dim,dim]))
-    return K.transpose(K.to_dense(sparse_out))
+                               tf.sparse.SparseTensor(lr_indices, cos, [dim, dim]))
+    return K.to_dense(sparse_out)
+
 
 def temporal_slice_layer(j):
     """
@@ -84,6 +90,7 @@ def temporal_slice_layer(j):
     :return: a keras.layers.Lambda instance.
     """
     return Lambda(lambda x: x[:, j, :])
+
 
 def merge_layer(dim):
     """
@@ -95,8 +102,9 @@ def merge_layer(dim):
     :return: a keras.layers.Lambda instance.
     """
     return Lambda(lambda tensors:
-                    tf.reshape(tf.concat([t[...,tf.newaxis] for t in tensors], axis=-1),
-                                [tf.shape(tensors[0])[0],dim]))
+                  tf.reshape(tf.concat([t[..., tf.newaxis] for t in tensors], axis=-1),
+                             [tf.shape(tensors[0])[0], dim]))
+
 
 def addition_layer():
     """
@@ -104,6 +112,7 @@ def addition_layer():
     :return: a Lambda layer taking in a list of tensors as input
     """
     return Lambda(lambda tensors: tf.math.add_n(tensors))
+
 
 def train_dropout(x, rate=0.4):
     """
@@ -114,6 +123,7 @@ def train_dropout(x, rate=0.4):
     """
     return K.in_train_phase(K.dropout(x, rate), x)
 
+
 def mnist_generator(batch_size=256):
     """
     creates a function for creating generators on MNIST.
@@ -123,15 +133,18 @@ def mnist_generator(batch_size=256):
     (x_train, label_train), (x_test, label_test) = tf.keras.datasets.mnist.load_data()
     x_train = x_train / 255
     y_train = tf.keras.utils.to_categorical(label_train, 10)
+
     def batch_generator():
         while True:
             end = batch_size
             q = np.random.permutation(x_train.shape[0])
-            x,y = x_train[q,:], y_train[q,:]
+            x, y = x_train[q, :], y_train[q, :]
             while end <= batch_size:
-                yield x[end-batch_size:end], y[end-batch_size:end]
+                yield x[end - batch_size:end], y[end - batch_size:end]
                 end += batch_size
+
     return batch_generator
+
 
 def adding_problem_generator(batch_size=256, time_steps=10):
     """
@@ -140,6 +153,7 @@ def adding_problem_generator(batch_size=256, time_steps=10):
     :param time_steps: sequence length
     :return: a function for making generators
     """
+
     def batch_generator():
         while True:
             """Generate the adding problem dataset"""
@@ -163,4 +177,5 @@ def adding_problem_generator(batch_size=256, time_steps=10):
             inputs -= np.mean(inputs, axis=0, keepdims=True)
 
             yield inputs, targets
+
     return batch_generator

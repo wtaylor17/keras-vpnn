@@ -3,6 +3,7 @@ from .utils import get_activation
 from keras.layers import Input
 from keras.models import Model
 
+
 def vpnn(dim, n_layers=1, out_dim=None, out_ac=None, **kwargs):
     """
     stacks vpnn layers, making a multi layer model

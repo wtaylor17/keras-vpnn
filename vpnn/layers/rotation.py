@@ -3,6 +3,7 @@ import keras.backend as K
 import tensorflow as tf
 from vpnn.utils import build_rotation
 
+
 class Rotation(Layer):
     def __init__(self, n_outputs, **kwargs):
         self.output_dim = n_outputs
@@ -17,7 +18,7 @@ class Rotation(Layer):
         self.c = K.cos(self.thetas)
         self.s = K.sin(self.thetas)
         self.kernel = build_rotation(self.output_dim, self.c, self.s)
-        super(Rotation,self).build(input_shape)
+        super(Rotation, self).build(input_shape)
 
     def __call__(self, *args, **kwargs):
         return super(Rotation, self).__call__(*args, **kwargs)

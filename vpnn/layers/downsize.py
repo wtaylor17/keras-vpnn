@@ -3,14 +3,15 @@ from keras.layers import Layer
 import numpy as np
 import tensorflow as tf
 
+
 class SVDDownsize(Layer):
     def __init__(self, input_dim, output_dim, n_rotations=1, **kwargs):
         self.output_dim = output_dim
         super(SVDDownsize, self).__init__(**kwargs)
         val = np.random.normal(size=(input_dim, output_dim))
-        u,s,v = np.linalg.svd(val)
-        z = u[:,:output_dim]
-        self.Z = tf.Variable(z,dtype=tf.float32,trainable=False)
+        u, s, v = np.linalg.svd(val)
+        z = u[:, :output_dim]
+        self.Z = tf.Variable(z, dtype=tf.float32,trainable=False)
     
     def build(self, input_shape):
         super(SVDDownsize, self).build(input_shape)

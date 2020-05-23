@@ -4,6 +4,7 @@ import tensorflow as tf
 
 from vpnn.utils import default_diag, build_diagonal
 
+
 class Diagonal(Layer):
     def __init__(self, n_outputs, M=0.01, **kwargs):
         self.output_dim = n_outputs

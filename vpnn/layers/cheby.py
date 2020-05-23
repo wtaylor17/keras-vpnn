@@ -7,6 +7,7 @@ from math import sqrt
 
 PRECISION_EPSILON = 1e-5
 
+
 def cheby_activate(x, merger, M=2.0):
     """
     returns the standard Chebyshev activation of x.
@@ -30,11 +31,11 @@ class Chebyshev(Layer):
         self.n_inputs = n_inputs
         self.M = M
         self.merger = None
-        super(Chebyshev,self).__init__(**kwargs)
+        super(Chebyshev, self).__init__(**kwargs)
     
     def build(self, input_shape):
         self.merger = merge_layer(self.n_inputs)
-        super(Chebyshev,self).build(input_shape)
+        super(Chebyshev, self).build(input_shape)
     
     def __call__(self, *args, **kwargs):
         return super(Chebyshev, self).__call__(*args, **kwargs)

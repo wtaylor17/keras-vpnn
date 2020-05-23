@@ -3,9 +3,9 @@ import keras.backend as K
 import tensorflow as tf
 from vpnn.utils import merge_layer
 from math import sqrt
+import numpy as np
 
-
-PRECISION_EPSILON = 1e-5
+K.set_epsilon(1e-5)
 
 
 def cheby_activate(x, merger, M=2.0):
@@ -18,11 +18,12 @@ def cheby_activate(x, merger, M=2.0):
     """
     xs = x[..., ::2]
     ys = x[..., 1::2]
-    r = K.sqrt(K.square(xs) + K.square(ys)) + PRECISION_EPSILON
-    sqrtM = sqrt(M)
-    cinv = tf.math.acos(xs / r)
-    evens = r / sqrtM * K.cos(M * cinv)
-    odds = r / sqrtM * K.sign(ys) * K.sin(M * cinv)
+    r = K.sqrt(K.square(xs) + K.square(ys)) + K.epsilon()
+    M_angle = M * tf.math.acos(K.clip(xs / r, -1, 1))
+    cheby_cos = K.cos(M_angle)
+    cheby_sin = K.sin(M_angle)
+    evens = r / sqrt(M) * cheby_cos
+    odds = r / sqrt(M) * K.sign(ys) * cheby_sin
     return merger([evens, odds])
 
 

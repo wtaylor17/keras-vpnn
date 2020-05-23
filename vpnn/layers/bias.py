@@ -1,5 +1,6 @@
 from keras.layers import Layer
 import keras.backend as K
+from math import sqrt
 
 
 class Bias(Layer):
@@ -10,8 +11,9 @@ class Bias(Layer):
 
     def build(self, input_shape):
         self.bias = self.add_weight(name='bias',
-                                    initializer='uniform',
+                                    initializer='normal',
                                     shape=(input_shape[-1],))
+        self.bias = self.bias / sqrt(self.output_dim)
         super(Bias, self).build(input_shape)
 
     def __call__(self, *args, **kwargs):

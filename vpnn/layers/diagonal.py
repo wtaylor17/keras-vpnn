@@ -13,14 +13,14 @@ class Diagonal(Layer):
         self.M = M
         self.f_t = None
         self.diag = None
-        super(Diagonal,self).__init__()
+        super(Diagonal, self).__init__()
     
     def build(self, input_shape):
         self.params = self.add_weight(name='t',
                                       initializer='uniform',
                                       shape=(self.output_dim,))
         self.diag = build_diagonal(self.params, self.func, self.M)
-        super(Diagonal,self).build(input_shape)
+        super(Diagonal, self).build(input_shape)
 
     def __call__(self, *args, **kwargs):
         return super(Diagonal, self).__call__(*args, **kwargs)

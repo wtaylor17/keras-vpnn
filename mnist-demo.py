@@ -1,18 +1,21 @@
 from vpnn import vpnn
 from vpnn.utils import mnist_generator
+from keras.optimizers import SGD
 
 generation_fn = mnist_generator()
 train_generator = map(lambda data: (data[0].reshape(-1,28*28), data[1]), generation_fn())
 
 model = vpnn(28*28,
-             n_rotations=4,
-             n_layers=2,
+             n_rotations=3,
+             n_layers=3,
              out_ac='softmax',
-             activation=None,
-             out_dim=10)
+             activation='cheby',
+             cheby_M=2,
+             out_dim=10,
+             diagonal_M=0.01)
 model.compile(loss='categorical_crossentropy',
               metrics=['acc'],
-              optimizer='adam')
+              optimizer=SGD(momentum=0.9))
 model.summary()
 
 history = model.fit_generator(train_generator,

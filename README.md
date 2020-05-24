@@ -28,7 +28,7 @@ vpnn_model = vpnn(in_dim,
 ```
 
 # Demos
-* MNIST: https://colab.research.google.com/drive/129DK7ZRVO018a4BxY2LoueIiJxE4aMAm?usp=sharing
+* MNIST [colab notebook](https://colab.research.google.com/drive/1SDfFRQKZh2us9VQekcQZK0j_gjO-zc9y?usp=sharing)
 
 # Citation of original work:
 ```

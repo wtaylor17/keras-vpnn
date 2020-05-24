@@ -1,4 +1,4 @@
-from .layers import vpnn_layer, Chebyshev, SVDDownsize
+from .layers import VPNNLayer, Chebyshev, SVDDownsize
 from .utils import get_activation
 from keras.layers import Input
 from keras.models import Model
@@ -14,10 +14,10 @@ def vpnn(dim, n_layers=1, out_dim=None, out_ac=None, **kwargs):
     :param kwargs: passed to vpnn_layer
     :return: a keras.models.Model instance
     """
-    layers = [vpnn_layer(dim, name='vpnn_%d'%_, **kwargs) for _ in range(n_layers-1)]
+    layers = [VPNNLayer(dim, name='vpnn_%d'%_, **kwargs) for _ in range(n_layers-1)]
     if 'activation' in kwargs:
         kwargs['activation'] = None
-    layers.append(vpnn_layer(dim, name='vpnn_out', **kwargs))
+    layers.append(VPNNLayer(dim, name='vpnn_out', **kwargs))
     input_layer = Input((dim,))
     current_output = input_layer
     for L in layers:

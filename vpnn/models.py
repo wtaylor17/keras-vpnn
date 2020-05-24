@@ -14,6 +14,8 @@ def vpnn(dim, n_layers=1, out_dim=None, out_ac=None, **kwargs):
     :param kwargs: passed to vpnn_layer
     :return: a keras.models.Model instance
     """
+    if 'output_dim' in kwargs:
+        del kwargs['output_dim']
     layers = [VPNNLayer(dim, name='vpnn_%d'%_, **kwargs) for _ in range(n_layers-1)]
     if 'activation' in kwargs:
         kwargs['activation'] = None

@@ -11,8 +11,8 @@ from keras.models import Model
 in_dim, out_dim = 784, 10 # MNIST
 input_layer = Input((in_dim,))
 vpnn_layer = VPNNLayer(in_dim,
-						activation='softmax',
-						output_dim=out_dim)
+                       activation='softmax',
+                       output_dim=out_dim)
 vpnn_model = Model(input_layer, vpnn_layer(input_layer))
 ```
 
@@ -22,9 +22,9 @@ from vpnn import vpnn
 
 in_dim, out_dim = 784, 10 # MNIST
 vpnn_model = vpnn(in_dim,
-					n_layers=3,
-					activation='softmax',
-					out_dim=out_dim)
+                  n_layers=3,
+                  activation='softmax',
+                  out_dim=out_dim)
 ```
 
 # Demos

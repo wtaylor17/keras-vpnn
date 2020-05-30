@@ -17,7 +17,7 @@ class Rotation(Layer):
                                       shape=(self.output_dim//2,))
         self.c = K.cos(self.thetas)
         self.s = K.sin(self.thetas)
-        self.kernel = build_rotation(self.output_dim, self.c, self.s)
+        self.kernel = K.transpose(build_rotation(self.output_dim, self.c, self.s))
         super(Rotation, self).build(input_shape)
 
     def __call__(self, *args, **kwargs):

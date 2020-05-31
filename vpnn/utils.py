@@ -1,3 +1,10 @@
+"""
+vpnn.utils
+========================================================================================
+General utility functions for the package. Includes many custom ``keras.layers.Lambda``,
+and some volume preserving transformation creation functions.
+"""
+
 from keras.layers import Lambda, Input, Layer, Activation
 from keras.models import Model
 import keras.backend as K
@@ -7,11 +14,13 @@ import numpy as np
 
 def get_activation(activation, dim=-1, cheby_M=2):
     """
-    safely tries to get an activation function
+    Safely tries to get an activation function
+
     :param cheby_M: M for chebyshev
     :param activation: str, or layer, or callable
-    :param dim: the output dim, only needed if activation=='cheby'
-    :return: an activation layer
+    :param dim: the output dim, only needed if ``activation='cheby'``
+
+    :return: a ``keras.layers.Activation`` layer or ``vpnn.layers.cheby.Chebyshev`` layer.
     """
     if isinstance(activation, Layer):
         return activation
@@ -25,9 +34,11 @@ def get_activation(activation, dim=-1, cheby_M=2):
 
 def build_permutation(dim):
     """
-    build a permutation transformation
+    Build a permutation transformation without trainable parameters.
+
     :param dim: the in/out dimension
-    :return: the permutation kernel
+
+    :return: a tuple, with the first element being a ``tf.Variable`` and the second being a numpy array.
     """
     perm = np.random.permutation(dim)
     q = np.zeros((dim, dim))
@@ -39,20 +50,24 @@ def build_permutation(dim):
 
 def default_diag(x):
     """
-    default diagonal function
-    :param x: tensor input
-    :return: the function applied to x
+    Default diagonal function, currently a sigmoid.
+
+    :param x: a tensor input
+
+    :return: the function applied to x as a new tensor.
     """
     return 1 / (1 + K.exp(-x))
 
 
 def build_diagonal(params, func, M=0.01):
     """
-    build the diagonal transformation as a vector
+    Build the diagonal transformation as a vector.
+
     :param params: the parameters to be used (trainable)
     :param func: function to use
     :param M: M parameter to use for the function
-    :return: the diagonal transformation
+
+    :return: the diagonal transformation as a tensor.
     """
     f_t = M * func(params / M) + M
     return f_t / tf.roll(f_t, shift=-1, axis=0)
@@ -60,11 +75,13 @@ def build_diagonal(params, func, M=0.01):
 
 def build_rotation(output_dim, cos, sin):
     """
-    makes a rotational kernel based on direct sums of 2d rotation matrices
+    Makes a rotational kernel based on direct sums of 2d rotation matrices
+
     :param output_dim: target output dimension
     :param cos: cos of theta, should have dimension output_dim//2
     :param sin: sin of theta, should have dimension output_dim//2
-    :return: the rotational kernel matrix (transposed)
+
+    :return: the rotational kernel matrix.
     """
     dim = output_dim
     # index build
@@ -85,21 +102,25 @@ def build_rotation(output_dim, cos, sin):
 
 def temporal_slice_layer(j):
     """
-    returns a keras.layers.Layer which maps a tensor X to the time step X[:,j,:].
+    Returns a ``keras.layers.Layer`` which maps a tensor ``X`` to the time step ``X[:,j,:]``.
+
     :param j: the time step (int)
-    :return: a keras.layers.Lambda instance.
+
+    :return: a ``keras.layers.Lambda`` instance.
     """
     return Lambda(lambda x: x[:, j, :])
 
 
 def merge_layer(dim):
     """
-    returns a keras.layers.Layer which attempts to merge a list of tensors into a desired form.
+    returns a ``keras.layers.Layer`` which attempts to merge a list of tensors into a desired form.
     The main use of this is for Chebyshev stuff.
-    If the list of tensors is [E,O] such that E = X[...,::2] and O = X[...,1::2] for some tensor X,
-    then the layer L returned has the property that L([E,O]) = X provided that dim = X.shape[-1].
+    If the list of tensors is ``[E,O]`` such that ``E = X[...,::2]`` and ``O = X[...,1::2]`` for some tensor X,
+    then the layer ``L`` returned has the property that ``L([E,O]) = X`` provided that ``dim = X.shape[-1]``.
+
     :param dim: the desired output dimension of the last axis
-    :return: a keras.layers.Lambda instance.
+
+    :return: a ``keras.layers.Lambda`` instance.
     """
     return Lambda(lambda tensors:
                   tf.reshape(tf.concat([t[..., tf.newaxis] for t in tensors], axis=-1),
@@ -108,7 +129,8 @@ def merge_layer(dim):
 
 def addition_layer():
     """
-    layer for adding tensors
+    Layer for adding tensors. A wrapper for ``tf.math.add_n``.
+
     :return: a Lambda layer taking in a list of tensors as input
     """
     return Lambda(lambda tensors: tf.math.add_n(tensors))
@@ -116,9 +138,11 @@ def addition_layer():
 
 def train_dropout(x, rate=0.4):
     """
-    returns a tensor representing dropout during training
+    Returns a tensor representing dropout during training.
+
     :param x: the input tensor to apply dropout to
     :param rate: the dropout rate, a float between 0 and 1
+
     :return: a tensor representing the dropout of x during training, and simply x otherwise
     """
     return K.in_train_phase(K.dropout(x, rate), x)
@@ -126,8 +150,10 @@ def train_dropout(x, rate=0.4):
 
 def mnist_generator(batch_size=256):
     """
-    creates a function for creating generators on MNIST.
+    Creates a function for creating generators on MNIST.
+
     :param batch_size: the batch size to use
+
     :return: a function for training batch generation
     """
     (x_train, label_train), (x_test, label_test) = tf.keras.datasets.mnist.load_data()
@@ -148,9 +174,12 @@ def mnist_generator(batch_size=256):
 
 def adding_problem_generator(batch_size=256, time_steps=10):
     """
+    A batch generator for the adding problem.
     Code reused from https://github.com/batzner/indrnn/blob/master/examples/addition_rnn.py
+
     :param batch_size: batch size to use
     :param time_steps: sequence length
+
     :return: a function for making generators
     """
 

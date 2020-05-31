@@ -8,13 +8,8 @@ class Rotation(Layer):
     def __init__(self, n_outputs, **kwargs):
         self.output_dim = n_outputs
         assert self.output_dim % 2 == 0
-        self.thetas, self.c, self.s, self.kernel = None, None, None, None
+        self.thetas, self.c, self.s = None, None, None
         self.inp_inds = tf.Variable(
-            np.random.permutation(self.output_dim),
-            trainable=False,
-            dtype=tf.int32
-        )
-        self.outp_inds = tf.Variable(
             np.random.permutation(self.output_dim),
             trainable=False,
             dtype=tf.int32

@@ -38,4 +38,4 @@ class Rotation(Layer):
         xj = tf.gather(x, self.inp_pairs[:, 1], axis=-1)
         yi = self.c * xi - self.s * xj
         yj = self.c * xj + self.s * xi
-        return tf.gather(tf.concat([yi, yj], axis=-1), self.outp_inds, axis=-1)
+        return tf.concat([yi, yj], axis=-1)

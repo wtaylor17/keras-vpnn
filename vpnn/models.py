@@ -1,18 +1,27 @@
+"""
+vpnn.models
+==================================================
+functions for loading specific model architectures
+"""
+
 from .layers import VPNNLayer, Chebyshev, SVDDownsize
 from .utils import get_activation
 from keras.layers import Input
 from keras.models import Model
 
 
+
 def vpnn(dim, n_layers=1, out_dim=None, out_ac=None, **kwargs):
     """
-    stacks vpnn layers, making a multi layer model
+    stacks vpnn layers, making a multi layer model.
+
     :param dim: input dimension of the vpnn
     :param n_layers: number of layers in the model
     :param out_dim: if not None, the dimension of an SVDDownsize output layer
     :param out_ac: str, the output activation of the model
     :param kwargs: passed to vpnn_layer
-    :return: a keras.models.Model instance
+
+    :return: a ``keras.models.Model`` instance.
     """
     if 'output_dim' in kwargs:
         del kwargs['output_dim']

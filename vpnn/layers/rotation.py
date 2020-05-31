@@ -9,8 +9,8 @@ class Rotation(Layer):
         self.output_dim = n_outputs
         assert self.output_dim % 2 == 0
         self.thetas, self.c, self.s, self.kernel = None, None, None, None
-        self.inp_pairs = tf.Variable(
-            np.random.permutation(self.output_dim).reshape(-1, 2),
+        self.inp_inds = tf.Variable(
+            np.random.permutation(self.output_dim),
             trainable=False,
             dtype=tf.int32
         )
@@ -19,7 +19,7 @@ class Rotation(Layer):
             trainable=False,
             dtype=tf.int32
         )
-        super(Rotation,self).__init__(**kwargs)
+        super(Rotation, self).__init__(**kwargs)
     
     def build(self, input_shape):
         self.thetas = self.add_weight(name='theta',
@@ -33,8 +33,9 @@ class Rotation(Layer):
         return super(Rotation, self).__call__(*args, **kwargs)
     
     def call(self, x, **kwargs):
-        xi = tf.gather(x, self.inp_pairs[:, 0], axis=-1)
-        xj = tf.gather(x, self.inp_pairs[:, 1], axis=-1)
+        permuted = tf.gather(x, self.inp_inds, axis=-1)
+        xi = permuted[:, :self.output_dim // 2]
+        xj = permuted[:, self.output_dim // 2:]
         yi = self.c * xi - self.s * xj
         yj = self.c * xj + self.s * xi
         return tf.concat([yi, yj], axis=-1)

@@ -6,7 +6,7 @@ and some volume preserving transformation creation functions.
 """
 
 from keras.layers import Lambda, Layer, Activation
-from vpnn.layers import Chebyshev
+from . import layers
 import keras.backend as K
 import tensorflow as tf
 import numpy as np
@@ -27,7 +27,7 @@ def get_activation(activation, dim=-1, cheby_M=2):
     elif activation == 'cheby':
         if type(dim) != int or dim <= 0:
             return None
-        return Chebyshev(dim, M=cheby_M)
+        return layers.Chebyshev(dim, M=cheby_M)
     else:
         return Activation(activation)
 

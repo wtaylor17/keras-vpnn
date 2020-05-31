@@ -5,10 +5,12 @@ import numpy as np
 
 
 class Rotation(Layer):
-    def __init__(self, n_outputs, **kwargs):
+    def __init__(self, n_outputs, seed=None, **kwargs):
         self.output_dim = n_outputs
         assert self.output_dim % 2 == 0
         self.thetas, self.c, self.s = None, None, None
+        self.seed = seed or np.random.randint(10000)
+        np.random.seed(self.seed)
         self.inp_inds = tf.Variable(
             np.random.permutation(self.output_dim),
             trainable=False,
@@ -33,4 +35,10 @@ class Rotation(Layer):
         xj = permuted[:, self.output_dim // 2:]
         yi = self.c * xi - self.s * xj
         yj = self.c * xj + self.s * xi
-        return tf.concat([yi, yj], axis=-1)
+        return K.concatenate([yi, yj], axis=-1)
+
+    def get_config(self):
+        config = super(Rotation, self).get_config()
+        config.update({'n_outputs': self.output_dim,
+                       'seed': self.seed})
+        return config

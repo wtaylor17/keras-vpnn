@@ -4,11 +4,10 @@ vpnn.models
 functions for loading specific model architectures
 """
 
-from .layers import VPNNLayer, Chebyshev, SVDDownsize
+from .layers import VPNNLayer, SVDDownsize, Chebyshev
 from .utils import get_activation
 from keras.layers import Input
 from keras.models import Model
-
 
 
 def vpnn(dim, n_layers=1, out_dim=None, out_ac=None, **kwargs):
@@ -25,7 +24,8 @@ def vpnn(dim, n_layers=1, out_dim=None, out_ac=None, **kwargs):
     """
     if 'output_dim' in kwargs:
         del kwargs['output_dim']
-    layers = [VPNNLayer(dim, name='vpnn_%d'%_, **kwargs) for _ in range(n_layers-1)]
+    layers = [VPNNLayer(dim, name='vpnn_%d' % j, **kwargs)
+              for j in range(n_layers-1)]
     if 'activation' in kwargs:
         kwargs['activation'] = None
     layers.append(VPNNLayer(dim, name='vpnn_out', **kwargs))
@@ -38,7 +38,8 @@ def vpnn(dim, n_layers=1, out_dim=None, out_ac=None, **kwargs):
     if out_ac:
         if out_ac == 'cheby':
             M = 1.3 if 'cheby_M' not in kwargs else kwargs['cheby_M']
-            current_output = Chebyshev(out_dim if out_dim is not None else dim, M=M)
+            current_output = Chebyshev(out_dim if out_dim is not None else dim,
+                                       M=M)
         else:
             current_output = get_activation(out_ac)(current_output)
     return Model(input_layer, current_output)

@@ -11,38 +11,30 @@ import keras.backend as K
 
 
 def vpnn_layer(dim,
-                 n_rotations=2,
-                 output_dim=None,
-                 activation=None,
-                 bias=True,
-                 perm=True,
-                 cheby_M=2.0,
-                 diagonal_M=0.01):
+               n_rotations=2,
+               output_dim=None,
+               activation=None,
+               use_bias=True,
+               cheby_M=2.0,
+               diagonal_M=0.01):
     """
     creates a single VPNN layer
     :param diagonal_M: parameter for diagonal function
     :param cheby_M: parameter for cheby activation
-    :param perm: if True, permutation sub-layers are enabled
     :param dim: input dimension of the model
     :param n_rotations: number of rotations in each of the 2 rotational sub layers.
     :param output_dim: if not None, the dimension of a SVDDownsize used as an output sublayer.
     :param activation: if str, interpreted as the name of an activation function to use.
-    :param bias: if True, a bias layer is applied before the activation
+    :param use_bias: if True, a bias layer is applied before the activation
     :return: a keras.models.Model instance representing the layer
     """
-    if not perm:
-        print('WARNING: no permutations will be used.')
     _hidden_layers = []
     for _ in range(n_rotations):
         _hidden_layers.append(Rotation(dim))
-        if perm:
-            _hidden_layers.append(Permutation(dim))
     _hidden_layers.append(Diagonal(dim, M=diagonal_M))
     for _ in range(n_rotations):
         _hidden_layers.append(Rotation(dim))
-        if perm:
-            _hidden_layers.append(Permutation(dim))
-    if bias:
+    if use_bias:
         _hidden_layers.append(Bias(dim))
     if activation is not None:
         if activation == 'cheby':
@@ -66,8 +58,7 @@ class VPNNLayer(Layer):
                  n_rotations=2,
                  output_dim=None,
                  activation=None,
-                 bias=True,
-                 perm=True,
+                 use_bias=True,
                  cheby_M=2.0,
                  diagonal_M=0.01,
                  **kwargs):
@@ -76,20 +67,18 @@ class VPNNLayer(Layer):
         :param diagonal_M: parameter for diagonal function
         :param cheby_M:
         :param name: name for the layer
-        :param perm: if True, permutation sub-layers are enabled
         :param dim: input dimension of the model
         :param n_rotations: number of rotations in each of the 2 rotational sub layers.
         :param output_dim: if not None, the dimension of a SVDDownsize used as an output sublayer.
         :param activation: if str, interpreted as the name of an activation function to use.
-        :param bias: if True, a bias layer is applied before the activation
+        :param use_bias: if True, a bias layer is applied before the activation
         :param kwargs: passed to super constructor
         """
         self.vpnn_layer_model = vpnn_layer(dim,
                                            n_rotations=n_rotations,
                                            output_dim=output_dim,
                                            activation=activation,
-                                           bias=bias,
-                                           perm=perm,
+                                           use_bias=use_bias,
                                            cheby_M=cheby_M,
                                            diagonal_M=diagonal_M)
         super(VPNNLayer, self).__init__(**kwargs)
@@ -97,5 +86,5 @@ class VPNNLayer(Layer):
     def compute_output_shape(self, input_shape):
         return K.int_shape(self.vpnn_layer_model.outputs[0])
 
-    def call(self, x):
+    def call(self, x, **kwargs):
         return self.vpnn_layer_model(x)

@@ -1,7 +1,6 @@
 from keras.layers import Layer
 import keras.backend as K
 import tensorflow as tf
-from vpnn.utils import build_rotation
 import numpy as np
 
 

@@ -5,8 +5,8 @@ General utility functions for the package. Includes many custom ``keras.layers.L
 and some volume preserving transformation creation functions.
 """
 
-from keras.layers import Lambda, Input, Layer, Activation
-from keras.models import Model
+from keras.layers import Lambda, Layer, Activation
+from vpnn.layers import Chebyshev
 import keras.backend as K
 import tensorflow as tf
 import numpy as np
@@ -71,33 +71,6 @@ def build_diagonal(params, func, M=0.01):
     """
     f_t = M * func(params / M) + M
     return f_t / tf.roll(f_t, shift=-1, axis=0)
-
-
-def build_rotation(output_dim, cos, sin):
-    """
-    Makes a rotational kernel based on direct sums of 2d rotation matrices
-
-    :param output_dim: target output dimension
-    :param cos: cos of theta, should have dimension output_dim//2
-    :param sin: sin of theta, should have dimension output_dim//2
-
-    :return: the rotational kernel matrix.
-    """
-    dim = output_dim
-    # index build
-    evens = range(0, dim, 2)
-    ul_indices = [[i, i] for i in evens]
-    sparse_out = tf.sparse.SparseTensor(ul_indices, cos, [dim, dim])
-    ur_indices = [[i, i + 1] for i in evens]
-    sparse_out = tf.sparse.add(sparse_out,
-                               tf.sparse.SparseTensor(ur_indices, -sin, [dim, dim]))
-    ll_indices = [[i + 1, i] for i in evens]
-    sparse_out = tf.sparse.add(sparse_out,
-                               tf.sparse.SparseTensor(ll_indices, sin, [dim, dim]))
-    lr_indices = [[i + 1, i + 1] for i in evens]
-    sparse_out = tf.sparse.add(sparse_out,
-                               tf.sparse.SparseTensor(lr_indices, cos, [dim, dim]))
-    return K.to_dense(sparse_out)
 
 
 def temporal_slice_layer(j):

@@ -1,10 +1,9 @@
 from .rotation import Rotation
-from .permutation import Permutation
 from .diagonal import Diagonal
 from .bias import Bias
 from .downsize import SVDDownsize
 from .cheby import Chebyshev
-from . import bias, cheby, diagonal, downsize, permutation, rotation
+from . import bias, cheby, diagonal, downsize, rotation
 from keras.models import Model
 from keras.layers import Input, Activation, Layer
 import keras.backend as K

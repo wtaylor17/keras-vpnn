@@ -3,6 +3,8 @@ import tensorflow as tf
 import keras
 import argparse
 import os
+import numpy as np
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', type=str, required=False, default='',
@@ -14,7 +16,9 @@ args = parser.parse_args()
 y_train = keras.utils.to_categorical(y_train)
 y_test = keras.utils.to_categorical(y_test)
 x_train = x_train.reshape(-1, 28*28) / 255
+x_train = np.round(x_train)
 x_test = x_test.reshape(-1, 28*28) / 255
+x_test = np.round(x_test)
 
 model_path = args.model
 if os.path.isfile(model_path):

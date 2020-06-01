@@ -7,7 +7,7 @@ class Bias(Layer):
     def __init__(self, n_outputs, **kwargs):
         self.output_dim = n_outputs
         self.bias = None
-        super(Bias, self).__init__()
+        super(Bias, self).__init__(**kwargs)
 
     def build(self, input_shape):
         self.bias = self.add_weight(name='bias',
@@ -19,5 +19,10 @@ class Bias(Layer):
     def __call__(self, *args, **kwargs):
         return super(Bias, self).__call__(*args, **kwargs)
 
-    def call(self, x):
+    def call(self, x, **kwargs):
         return x + self.bias
+
+    def get_config(self):
+        config = super(Bias, self).get_config()
+        config.update({'n_outputs': self.output_dim})
+        return config

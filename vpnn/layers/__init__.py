@@ -7,6 +7,7 @@ from . import bias, cheby, diagonal, downsize, rotation
 from keras.models import Model
 from keras.layers import Input, Activation, Layer
 import keras.backend as K
+from ..utils import get_activation
 
 
 def VPNNLayer(dim,

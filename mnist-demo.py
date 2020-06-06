@@ -32,7 +32,6 @@ if os.path.isfile(model_path):
     print(f'Test Loss: {test_loss}')
     print(f'Test Accuracy: {test_acc * 100}%')
 else:
-    keras.backend.manual_variable_initialization(True)
     model = vpnn(28 * 28,
                  n_rotations=3,
                  n_layers=3,

@@ -145,7 +145,7 @@ def mnist_generator(batch_size=256):
     return batch_generator
 
 
-def adding_problem_generator(batch_size=256, time_steps=10):
+def adding_problem_generator(batch_size=256, time_steps=10, center=False):
     """
     A batch generator for the adding problem.
     Code reused from https://github.com/batzner/indrnn/blob/master/examples/addition_rnn.py
@@ -176,7 +176,8 @@ def adding_problem_generator(batch_size=256, time_steps=10):
             targets = np.sum(np.multiply(add_values, add_indices), axis=1)
 
             # center at zero mean
-            inputs -= np.mean(inputs, axis=0, keepdims=True)
+            if center:
+                inputs -= np.mean(inputs, axis=0, keepdims=True)
 
             yield inputs, targets
 

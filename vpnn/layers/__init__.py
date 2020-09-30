@@ -15,6 +15,7 @@ def VPNNLayer(dim,
               output_dim=None,
               activation=None,
               use_bias=True,
+              use_diag=True,
               cheby_M=2.0,
               diagonal_M=0.01,
               **kwargs):
@@ -27,12 +28,14 @@ def VPNNLayer(dim,
     :param output_dim: if not None, the dimension of a SVDDownsize used as an output sublayer.
     :param activation: if str, interpreted as the name of an activation function to use.
     :param use_bias: if True, a bias layer is applied before the activation
+    :param use_diag: if True, a diagonal sublayer is used inbetween rotations
     :return: a keras.models.Model instance representing the layer
     """
     _hidden_layers = []
     for _ in range(n_rotations):
         _hidden_layers.append(Rotation(dim))
-    _hidden_layers.append(Diagonal(dim, M=diagonal_M))
+    if use_diag:
+        _hidden_layers.append(Diagonal(dim, M=diagonal_M))
     for _ in range(n_rotations):
         _hidden_layers.append(Rotation(dim))
     if use_bias:

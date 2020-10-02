@@ -3,20 +3,29 @@ import keras.backend as K
 import tensorflow as tf
 
 
+def exp_sin(x):
+    return K.exp(K.sin(x))
+
+
 class Diagonal(Layer):
-    def __init__(self, n_outputs, M=0.01, **kwargs):
+    def __init__(self, n_outputs, M=0.01, func_name='exp_sin', **kwargs):
         self.output_dim = n_outputs
         self.params = None
         self.M = M
         self.f_t = None
         self.diag = None
+        self.func_name = func_name
+        if func_name == 'exp_sin':
+            self.func = exp_sin
+        else:
+            self.func = K.sigmoid
         super(Diagonal, self).__init__()
 
     def build(self, input_shape):
         self.params = self.add_weight(name='t',
                                       initializer='uniform',
                                       shape=(self.output_dim,))
-        f = self.M / (1 + K.exp(-self.params / self.M)) + self.M
+        f = self.M * self.func(self.params / self.M) + self.M
         self.diag = f / tf.roll(f, -1, 0)
         super(Diagonal, self).build(input_shape)
 
@@ -28,7 +37,8 @@ class Diagonal(Layer):
 
     def get_config(self):
         config = super(Diagonal, self).get_config()
-        config.update({'n_outputs': self.output_dim, 'M': self.M})
+        config.update({'n_outputs': self.output_dim, 'M': self.M,
+                       'func_name': self.func_name})
         return config
 
 

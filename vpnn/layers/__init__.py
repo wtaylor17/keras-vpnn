@@ -5,8 +5,7 @@ from .downsize import SVDDownsize
 from .cheby import Chebyshev
 from . import bias, cheby, diagonal, downsize, rotation
 from keras.models import Model
-from keras.layers import Input, Activation, Layer
-import keras.backend as K
+from keras.layers import Input
 from ..utils import get_activation
 
 
@@ -16,6 +15,7 @@ def VPNNLayer(dim,
               activation=None,
               use_bias=True,
               use_diag=True,
+              diag_func='exp_sin',
               cheby_M=2.0,
               diagonal_M=0.01,
               **kwargs):
@@ -29,22 +29,21 @@ def VPNNLayer(dim,
     :param activation: if str, interpreted as the name of an activation function to use.
     :param use_bias: if True, a bias layer is applied before the activation
     :param use_diag: if True, a diagonal sublayer is used inbetween rotations
+    :param diag_func: if == 'exp_sin', then exp(sin(x)) is used instead of sigmoid for diagonals
     :return: a keras.models.Model instance representing the layer
     """
     _hidden_layers = []
     for _ in range(n_rotations):
         _hidden_layers.append(Rotation(dim))
     if use_diag:
-        _hidden_layers.append(Diagonal(dim, M=diagonal_M))
+        _hidden_layers.append(Diagonal(dim, M=diagonal_M, func_name=diag_func))
     for _ in range(n_rotations):
         _hidden_layers.append(Rotation(dim))
     if use_bias:
         _hidden_layers.append(Bias(dim))
     if activation is not None:
-        if activation == 'cheby':
-            _hidden_layers.append(Chebyshev(dim, M=cheby_M))
-        else:
-            _hidden_layers.append(Activation(activation))
+        fn = get_activation(activation, dim=dim, cheby_M=cheby_M)
+        _hidden_layers.append(fn)
     if output_dim:
         _hidden_layers.append(SVDDownsize(dim, output_dim))
 

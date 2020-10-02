@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='keras-vpnn',
@@ -8,5 +8,6 @@ setup(
     license='MIT',
     author='William Taylor',
     author_email='wtaylor@upei.ca',
-    description='Implementation of Volume-Preserving Neural Networks in Keras', requires=['keras']
+    description='Implementation of Volume-Preserving Neural Networks in Keras',
+    requires=['keras', 'tensorflow', 'numpy']
 )

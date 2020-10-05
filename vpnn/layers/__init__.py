@@ -18,6 +18,7 @@ def VPNNLayer(dim,
               diag_func='exp_sin',
               cheby_M=2.0,
               diagonal_M=0.01,
+              use_diagonal_M=True,
               **kwargs):
     """
     creates a single VPNN layer
@@ -30,13 +31,17 @@ def VPNNLayer(dim,
     :param use_bias: if True, a bias layer is applied before the activation
     :param use_diag: if True, a diagonal sublayer is used inbetween rotations
     :param diag_func: if == 'exp_sin', then exp(sin(x)) is used instead of sigmoid for diagonals
+    :param use_diagonal_M: whether to use the M*f(x/M)+M in diagonal instead of just f(x)
     :return: a keras.models.Model instance representing the layer
     """
     _hidden_layers = []
     for _ in range(n_rotations):
         _hidden_layers.append(Rotation(dim))
     if use_diag:
-        _hidden_layers.append(Diagonal(dim, M=diagonal_M, func_name=diag_func))
+        _hidden_layers.append(Diagonal(dim,
+                                       M=diagonal_M,
+                                       func_name=diag_func,
+                                       use_M=use_diagonal_M))
     for _ in range(n_rotations):
         _hidden_layers.append(Rotation(dim))
     if use_bias:

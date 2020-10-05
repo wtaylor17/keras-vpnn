@@ -8,7 +8,7 @@ def exp_sin(x):
 
 
 class Diagonal(Layer):
-    def __init__(self, n_outputs, M=0.01, func_name='exp_sin', **kwargs):
+    def __init__(self, n_outputs, M=0.01, func_name='exp_sin', use_M=True, **kwargs):
         self.output_dim = n_outputs
         self.params = None
         self.M = M
@@ -19,13 +19,17 @@ class Diagonal(Layer):
             self.func = exp_sin
         else:
             self.func = K.sigmoid
+        self.use_M = use_M
         super(Diagonal, self).__init__()
 
     def build(self, input_shape):
         self.params = self.add_weight(name='t',
                                       initializer='uniform',
                                       shape=(self.output_dim,))
-        f = self.M * self.func(self.params / self.M) + self.M
+        if self.use_M:
+            f = self.M * self.func(self.params / self.M) + self.M
+        else:
+            f = self.func(self.params)
         self.diag = f / tf.roll(f, -1, 0)
         super(Diagonal, self).build(input_shape)
 
@@ -38,7 +42,7 @@ class Diagonal(Layer):
     def get_config(self):
         config = super(Diagonal, self).get_config()
         config.update({'n_outputs': self.output_dim, 'M': self.M,
-                       'func_name': self.func_name})
+                       'func_name': self.func_name, 'use_M': self.use_M})
         return config
 
 

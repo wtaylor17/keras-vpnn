@@ -1,4 +1,5 @@
 from keras.layers import Layer
+from keras.initializers import constant
 import keras.backend as K
 import tensorflow as tf
 
@@ -8,7 +9,12 @@ def exp_sin(x):
 
 
 class Diagonal(Layer):
-    def __init__(self, n_outputs, M=0.01, func_name='exp_sin', use_M=True, **kwargs):
+    def __init__(self, n_outputs,
+                 M=0.01,
+                 func_name='exp_sin',
+                 t_initializer=0.0,
+                 use_M=True,
+                 **kwargs):
         self.output_dim = n_outputs
         self.params = None
         self.M = M
@@ -20,11 +26,16 @@ class Diagonal(Layer):
         else:
             self.func = K.sigmoid
         self.use_M = use_M
-        super(Diagonal, self).__init__()
+        self.t_initializer = t_initializer
+        super(Diagonal, self).__init__(**kwargs)
 
     def build(self, input_shape):
+        if type(self.t_initializer) is float:
+            initializer = constant(self.t_initializer)
+        else:
+            initializer = self.t_initializer
         self.params = self.add_weight(name='t',
-                                      initializer='uniform',
+                                      initializer=initializer,
                                       shape=(self.output_dim,))
         if self.use_M:
             f = self.M * self.func(self.params / self.M) + self.M
@@ -42,7 +53,8 @@ class Diagonal(Layer):
     def get_config(self):
         config = super(Diagonal, self).get_config()
         config.update({'n_outputs': self.output_dim, 'M': self.M,
-                       'func_name': self.func_name, 'use_M': self.use_M})
+                       'func_name': self.func_name, 'use_M': self.use_M,
+                       't_initializer': self.t_initializer})
         return config
 
 
@@ -55,10 +67,10 @@ class Hadamard(Layer):
     def __init__(self, n_outputs, **kwargs):
         self.output_dim = n_outputs
         self.vec = None
-        super(Hadamard, self).__init__()
+        super(Hadamard, self).__init__(**kwargs)
 
     def build(self, input_shape):
-        self.vec = self.add_weight(name='t',
+        self.vec = self.add_weight(name='vec',
                                    initializer='uniform',
                                    shape=(self.output_dim,))
         super(Hadamard, self).build(input_shape)

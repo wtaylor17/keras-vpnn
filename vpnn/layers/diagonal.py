@@ -12,7 +12,7 @@ class Diagonal(Layer):
     def __init__(self, n_outputs,
                  M=0.01,
                  func_name='exp_sin',
-                 t_initializer=0.0,
+                 t_initializer='uniform',
                  use_M=True,
                  **kwargs):
         self.output_dim = n_outputs

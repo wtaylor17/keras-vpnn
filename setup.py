@@ -9,5 +9,5 @@ setup(
     author='William Taylor',
     author_email='wtaylor@upei.ca',
     description='Implementation of Volume-Preserving Neural Networks in Keras',
-    requires=['keras', 'tensorflow', 'numpy']
+    # requires=['keras', 'tensorflow', 'numpy']
 )

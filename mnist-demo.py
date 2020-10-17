@@ -47,7 +47,7 @@ else:
     history = model.fit(x_train, y_train,
                         epochs=10, validation_data=[x_test, y_test],
                         batch_size=256).history
-
+    '''
     import matplotlib.pyplot as plt
 
     _, axs = plt.subplots(1, 2)
@@ -56,6 +56,7 @@ else:
     axs[1].plot(history['val_acc'], 'k', label='val acc')
     axs[1].legend()
     plt.show()
+    '''
     model.save('mnist-vpnn.h5')
     del model
     model = keras.models.load_model('mnist-vpnn.h5',

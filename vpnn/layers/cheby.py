@@ -25,8 +25,9 @@ class Chebyshev(Layer):
         M_angle = self.M * tf.math.acos(K.clip(xs / r, -1, 1))
         cheby_cos = K.cos(M_angle)
         cheby_sin = K.sin(M_angle)
-        evens = r / sqrt(self.M) * cheby_cos
-        odds = r / sqrt(self.M) * K.sign(ys) * cheby_sin
+        rm = r / sqrt(self.M)
+        evens = rm * cheby_cos
+        odds = rm * K.sign(ys) * cheby_sin
         return tf.reshape(
             tf.concat([evens[..., tf.newaxis], odds[..., tf.newaxis]], axis=-1),
             [tf.shape(evens)[0], self.n_inputs]

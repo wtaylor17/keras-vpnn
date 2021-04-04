@@ -6,6 +6,7 @@ from .cheby import Chebyshev
 from . import bias, cheby, diagonal, downsize, rotation
 from keras.models import Model
 from keras.layers import Input
+from keras.layers import Activation
 from ..utils import get_activation
 
 
@@ -48,7 +49,7 @@ def VPNNLayer(dim,
         _hidden_layers.append(Bias(dim))
     if activation is not None:
         fn = get_activation(activation, dim=dim, cheby_M=cheby_M)
-        _hidden_layers.append(fn)
+        _hidden_layers.append(Activation(fn))
     if output_dim:
         _hidden_layers.append(SVDDownsize(dim, output_dim))
 

@@ -6,13 +6,14 @@ General utility functions for the package
 import keras
 from . import layers
 import keras.backend as K
+from keras.layers import Activation
 import tensorflow as tf
 import numpy as np
 
 
 def get_activation(activation, dim=-1, cheby_M=2):
     """
-    Safely tries to get an activation function
+    Safely tries to get an activation function (as a layer)
 
     :param cheby_M: M for chebyshev
     :param activation: str, or layer, or callable
@@ -25,7 +26,7 @@ def get_activation(activation, dim=-1, cheby_M=2):
             return None
         return layers.Chebyshev(dim, M=cheby_M)
     else:
-        return keras.activations.get(activation)
+        return Activation(keras.activations.get(activation))
 
 
 def train_dropout(x, rate=0.4):

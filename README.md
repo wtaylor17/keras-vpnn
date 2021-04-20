@@ -30,6 +30,14 @@ vpnn_model = vpnn(in_dim,
 # Demos
 * MNIST [colab notebook](https://colab.research.google.com/drive/1SDfFRQKZh2us9VQekcQZK0j_gjO-zc9y?usp=sharing)
 
+# Note on Rotation Implementation
+In the original VPNN each "rotation-permutation" pair computes `R*Q*x`, i.e., a permutation and then a rotation.
+In the fast implementation, this requires splitting `Q*x` into even-odd index pairs and then performing the transformation `R`.
+In this implementation, instead of performing even-odd splitting, I simply take the top and bottom halfs of `Q*x` as this is faster.
+This is equivalent to adding a fixed permutation `Q'` to the transformation (as we are just shuffling indices) and does not change the actual architecture.
+To see this fact, we could replace each `Q` by a permutation `Q * inv(Q')` or something similar to make these extra shuffles cancel out, but in practice this won't have much (if any benefit). It certainly
+doesn't give the model any unfair advantage, is the point of this disclaimer.
+
 # Citation of original work:
 ```
 @misc{macdonald2019volumepreserving,
